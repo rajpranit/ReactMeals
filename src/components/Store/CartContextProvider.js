@@ -1,7 +1,7 @@
 import React from "react";
 import CartContext from "./Cart-Context";
 
-const CartProvier = (props) => {
+const CartProvider = (props) => {
   const addCartItem = (item) => {};
 
   const removeCartItem = (id) => {};
@@ -14,10 +14,10 @@ const CartProvier = (props) => {
   };
 
   return (
-    <CartContext.provider value={cartContext}>
+    <CartContext.Provider value={cartContext}>
       {props.children}
-    </CartContext.provider>
+    </CartContext.Provider>
   );
 };
 
-export default CartProvier;
+export default CartProvider;
