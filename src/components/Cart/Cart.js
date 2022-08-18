@@ -7,16 +7,22 @@ import CartItem from "./CartItem";
 const Cart = (props) => {
   const cartCtx = useContext(CartContext);
 
+  const totalAmount = `$${cartCtx.totalAmount.toFixed(2)}`;
+
   const hasItems = cartCtx.items.length > 0;
 
-  const onAddItemHandler = (item) => {};
-  const onRemoveItemHandler = (id) => {};
+  const onAddItemHandler = (item) => {
+    cartCtx.addItem({ ...item, amount: 1 });
+  };
+  const onRemoveItemHandler = (id) => {
+    cartCtx.removeItem(id);
+  };
 
   const cartItems = (
     <ul className={styles["cart-items"]}>
       {cartCtx.items.map((meal) => (
         <CartItem
-          id={meal.id}
+          key={meal.id}
           name={meal.name}
           price={meal.price}
           amount={meal.amount}
@@ -30,6 +36,10 @@ const Cart = (props) => {
   return (
     <Modal closeCart={props.hideCart}>
       {cartItems}
+      <div className={styles.total}>
+        <span>Total Amount</span>
+        <span>{totalAmount}</span>
+      </div>
       <div className={styles.actions}>
         <button onClick={props.hideCart} className={styles["button--alt"]}>
           Close
