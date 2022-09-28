@@ -7,6 +7,8 @@ import Checkout from "./Checkout";
 
 const Cart = (props) => {
   const [checkout, setCheckout] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [didSubmit, setDidSubmit] = useState(false);
   const cartCtx = useContext(CartContext);
 
   const totalAmount = `$${cartCtx.totalAmount.toFixed(2)}`;
@@ -52,15 +54,50 @@ const Cart = (props) => {
     </ul>
   );
 
-  return (
-    <Modal closeCart={props.hideCart}>
+  const confirmHanndler = (userData) => {
+    setIsSubmitting(true);
+    fetch("https://react-http-95b9d-default-rtdb.firebaseio.com/order.json", {
+      method: "POST",
+      body: JSON.stringify({
+        user: userData,
+        orderedItems: cartCtx.items,
+      }),
+    });
+    setIsSubmitting(false);
+    setDidSubmit(true);
+    cartCtx.clearCart();
+  };
+
+  const cartModalContent = (
+    <>
       {cartItems}
       <div className={styles.total}>
         <span>Total Amount</span>
         <span>{totalAmount}</span>
       </div>
-      {checkout && <Checkout onClose={props.hideCart} />}
+      {checkout && (
+        <Checkout onConfirm={confirmHanndler} onClose={props.hideCart} />
+      )}
       {!checkout && actions}
+    </>
+  );
+
+  const submittingModelContent = <p>Submitting....</p>;
+  const didSubmitModelContent = (
+    <>
+      <p>Your Order has been placed!</p>
+      <div className={styles.actions}>
+        <button onClick={props.hideCart} className={styles["button--alt"]}>
+          Close
+        </button>
+      </div>
+    </>
+  );
+  return (
+    <Modal closeCart={props.hideCart}>
+      {!isSubmitting && !didSubmit && cartModalContent}
+      {isSubmitting && submittingModelContent}
+      {didSubmit && didSubmitModelContent}
     </Modal>
   );
 };
